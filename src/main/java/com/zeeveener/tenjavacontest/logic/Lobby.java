@@ -46,12 +46,14 @@ public class Lobby {
 		oldInvs.put(p, p.getInventory());
 		p.getInventory().clear();
 		p.teleport(spawn);
+		addToLobby(p);
 		Chat.message(p, "Welcome to the Battle Lobby!");
 		Chat.message(p, "To start a game, type /start");
 	}
 	public void leaveLobby(Player p){
 		p.getInventory().clear();
 		p.getInventory().setContents(oldInvs.get(p).getContents());
+		removeFromLobby(p);
 	}
 	
 	public boolean isPlayerInLobby(Player p){

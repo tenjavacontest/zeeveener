@@ -3,9 +3,9 @@ package com.zeeveener.tenjavacontest.logic;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -24,9 +24,13 @@ public class BattleGame {
 	private TenJava plugin;
 	private HashMap<EntityType, Integer> kills = new HashMap<EntityType, Integer>();
 	private int points = 0;
+	private int lastLotteryPoints = 0;
+	private int killCount = 0;
+	private int lastLotteryKills = 0;
 	private Player p;
 	private int taskId;
 	private int deaths = 0;
+	private int lastLotteryDeaths = 0;
 	
 	public BattleGame(TenJava instance, Player player){
 		plugin = instance;
@@ -60,19 +64,10 @@ public class BattleGame {
 		 * Scoreboard
 		 */
 	}
-	
 	public void stop(){
 		if(taskId >= 0) this.plugin.getServer().getScheduler().cancelTask(taskId);
 		Chat.message(p, "The game was stopped prematurely.");
-		p.teleport(getLobby());
-	}
-	
-	public Location getLobby(){
-		World w = plugin.getServer().getWorld(plugin.config.getConfig().getString("Game.Lobby.world", "world"));
-		int x = plugin.config.getConfig().getInt("Game.Lobby.x", 0);
-		int y = plugin.config.getConfig().getInt("Game.Lobby.y", 0);
-		int z = plugin.config.getConfig().getInt("Game.Lobby.z", 0);
-		return new Location(w,x,y,z);
+		p.teleport(plugin.lobby.getSpawn());
 	}
 	
 	public static World getGameWorld(){
@@ -85,6 +80,11 @@ public class BattleGame {
 	}
 	public void addPoints(int toAdd){
 		points += toAdd;
+		if(points%10 == 0){
+			if(points - lastLotteryPoints >= 20){
+				if(p.getHealth() < p.getMaxHealth()*0.35) giveFood();
+			}
+		}
 	}
 	
 	public static void addDeath(Player p){
@@ -93,6 +93,9 @@ public class BattleGame {
 	}
 	public void addDeath(){
 		deaths++;
+		if(deaths % 2 == 0){
+			if(deaths - lastLotteryDeaths >= 4) giveArmour();
+		}
 	}
 	
 	public static void addKill(Player p, EntityType e){
@@ -103,8 +106,42 @@ public class BattleGame {
 		int old = 0;
 		if(kills.containsKey(e)) old = kills.get(e);
 		kills.put(e, ++old);
+		killCount++;
+		if(killCount % 5 == 0){
+			if(killCount - lastLotteryKills >= 10) giveWeapon();
+		}
 	}
 	
+	private void giveFood(){
+		Material[] lottery = new Material[]{Material.APPLE, Material.BAKED_POTATO, Material.BREAD, Material.CAKE, Material.COOKED_BEEF, Material.COOKED_CHICKEN, Material.COOKED_FISH, Material.COOKIE, Material.MUSHROOM_SOUP};
+		Random r = new Random();
+		int index = r.nextInt(lottery.length-1);
+		int amount = r.nextInt(64);
+		p.getInventory().addItem(new ItemStack(lottery[index], amount));
+		Chat.message(p, "You have earned " + Chat.m + amount + " " + lottery[index].toString().toLowerCase());
+		lastLotteryPoints = points;
+	}
+	private void giveWeapon(){
+		Material[] lottery = new Material[]{Material.STONE_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.GOLD_SWORD, Material.WOOD_SWORD, Material.ARROW};
+		Random r = new Random();
+		int index = r.nextInt(lottery.length-1);
+		int amount = r.nextInt(64);
+		p.getInventory().addItem(new ItemStack(lottery[index], amount));
+		Chat.message(p, "You have earned " + Chat.m + amount + " " + lottery[index].toString().toLowerCase());
+		lastLotteryKills = killCount;
+	}
+	private void giveArmour(){
+		Material[] lottery = new Material[]{Material.IRON_BOOTS, Material.IRON_CHESTPLATE, Material.IRON_HELMET, Material.IRON_LEGGINGS, 
+				Material.GOLD_BOOTS, Material.GOLD_CHESTPLATE, Material.GOLD_LEGGINGS, Material.GOLD_HELMET,
+				Material.DIAMOND_BOOTS, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_HELMET, Material.DIAMOND_LEGGINGS,
+				Material.CHAINMAIL_BOOTS, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_LEGGINGS};
+		Random r = new Random();
+		int index = r.nextInt(lottery.length-1);
+		int amount = r.nextInt(64);
+		p.getInventory().addItem(new ItemStack(lottery[index], amount));
+		Chat.message(p, "You have earned " + Chat.m + amount + " " + lottery[index].toString().toLowerCase());
+		lastLotteryDeaths = deaths;
+	}
 	private void giveBasicEquipment(){
 		p.getInventory().clear();
 		ItemStack helm = new ItemStack(Material.LEATHER_HELMET, 1);
@@ -118,6 +155,7 @@ public class BattleGame {
 		ItemStack food = new ItemStack(Material.COOKED_FISH, 4);
 		p.getInventory().addItem(food, weapon, bow, ammo);
 	}
+	
 	private EntityType getMostKilled(){
 		EntityType toReturn = null;
 		int lastKillCount = 0;
