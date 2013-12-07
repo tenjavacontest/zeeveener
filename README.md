@@ -3,6 +3,6 @@ zeeveener
 
 Stream: http://twitch.tv/zeeveener
 
-Theme:
+Theme: Entities
 
 Time: 1600 UTC
