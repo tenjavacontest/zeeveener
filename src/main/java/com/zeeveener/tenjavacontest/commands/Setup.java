@@ -39,6 +39,7 @@ public class Setup implements CommandExecutor{
 			help.add("/setup world (world) (x) (y) (z)");
 			help.add("/setup lobby (world) (x) (y) (z)");
 			help.add("/setup takeover (t/f)");
+			help.add("/setup timelimit (#)");
 			help.add("Typing only the first argument will give more info on that arg. (Suggested)");
 			Chat.message(s, "Command Info", help.toArray(new String[0]));
 		}else if(args.length == 1){
@@ -61,7 +62,7 @@ public class Setup implements CommandExecutor{
 				help.add("y: Y coordinate of the desired spawn point");
 				help.add("z: Z coordinate of the desired spawn point");
 				if(s instanceof Player)help.add("/setup lobby here - Will set the spawn point at your current location.");
-				Chat.message(s, "World Setup Info", help.toArray(new String[0]));
+				Chat.message(s, "Lobby", help.toArray(new String[0]));
 			}else if(args[0].equalsIgnoreCase("takeover")){
 				List<String> help = new ArrayList<String>();
 				help.add("Used to determine if the sole purpose of this server is running this plugin.");
@@ -69,6 +70,14 @@ public class Setup implements CommandExecutor{
 				help.add("/setup takeover (t/f)");
 				help.add("t/f: True or False.");
 				help.add("By default this is set to false.");
+				Chat.message(s, "TakeOver Info", help.toArray(new String[0]));
+			}else if(args[0].equalsIgnoreCase("timelimit")){
+				List<String> help = new ArrayList<String>();
+				help.add("Used to determine how long the game lasts.");
+				help.add("/setup timelimit (#)");
+				help.add("#: Value in seconds.");
+				help.add("By default this is set to 10 minutes (600).");
+				Chat.message(s, "Timelimit Info", help.toArray(new String[0]));
 			}else{
 				s.getServer().dispatchCommand(s, "setup");
 				return true;
@@ -80,7 +89,13 @@ public class Setup implements CommandExecutor{
 					return false;
 				}
 				if(args[1].equalsIgnoreCase("here")){
-					this.world(((Player)s).getLocation());
+					Location loc = ((Player)s).getLocation();
+					this.world(loc);
+					String w = loc.getWorld().getName();
+					int x = loc.getBlockX();
+					int y = loc.getBlockY();
+					int z = loc.getBlockZ();
+					Chat.message(s, "World set to: " + w + " at " + x + " " + y + " " + z);
 				}else{
 					s.getServer().dispatchCommand(s, "setup world");
 				}
@@ -90,7 +105,13 @@ public class Setup implements CommandExecutor{
 					return false;
 				}
 				if(args[1].equalsIgnoreCase("here")){
-					this.lobby(((Player)s).getLocation());
+					Location loc = ((Player)s).getLocation();
+					this.lobby(loc);
+					String w = loc.getWorld().getName();
+					int x = loc.getBlockX();
+					int y = loc.getBlockY();
+					int z = loc.getBlockZ();
+					Chat.message(s, "World set to: " + w + " at " + x + " " + y + " " + z);
 				}else{
 					s.getServer().dispatchCommand(s, "setup lobby");
 				}
@@ -103,6 +124,16 @@ public class Setup implements CommandExecutor{
 					Chat.message(s, "TakeOverServer set to FALSE");
 				}else{
 					s.getServer().dispatchCommand(s, "setup takeover");
+				}
+			}else if(args[0].equalsIgnoreCase("timelimit")){
+				try{
+					int x = Integer.parseInt(args[1]);
+					plugin.config.set("Game.TimeLimit", x);
+					Chat.message(s, "Time limit set to: " + x + " seconds.");
+				}catch(NumberFormatException e){
+					Chat.error(s, "Expected Integer, got something else.");
+					s.getServer().dispatchCommand(s, "setup timelimit");
+					return false;
 				}
 			}else{
 				s.getServer().dispatchCommand(s, "setup");
@@ -121,6 +152,7 @@ public class Setup implements CommandExecutor{
 					return false;
 				}
 				this.world(new Location(w, x, y, z));
+				Chat.message(s, "World set to: " + w.getName() + " at " + x + " " + y + " " + z);
 			}else if(args[0].equalsIgnoreCase("lobby")){
 				World w = plugin.getServer().getWorld(args[1]);
 				int x = 0,y = 0,z = 0;
@@ -134,6 +166,7 @@ public class Setup implements CommandExecutor{
 					return false;
 				}
 				this.lobby(new Location(w, x, y, z));
+				Chat.message(s, "Lobby set to: " + w.getName() + " at " + x + " " + y + " " + z);
 			}else{
 				s.getServer().dispatchCommand(s, "setup");
 			}
