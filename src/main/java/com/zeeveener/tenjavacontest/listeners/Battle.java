@@ -5,9 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.zeeveener.tenjavacontest.logic.BattleGame;
-import com.zeeveener.tenjavacontest.utilities.Chat;
 
 public class Battle implements Listener{
 
@@ -21,6 +22,18 @@ public class Battle implements Listener{
 		if(pointsAwarded <= 0) return;
 		
 		BattleGame.addKill(killer, dead.getType());
+		BattleGame.addPoints(killer, pointsAwarded);
+	}
+	
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent e){
+		BattleGame.addDeath(e.getEntity());
+	}
+	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e){
+		if(!BattleGame.games.containsKey(e.getPlayer())) return;
+		e.setRespawnLocation(BattleGame.getGameWorld().getSpawnLocation());
 	}
 	
 	private int points(Entity e){
