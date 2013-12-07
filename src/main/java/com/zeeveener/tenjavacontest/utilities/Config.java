@@ -32,6 +32,12 @@ public class Config {
 	private void init(){
 		if(!config.contains("Game.World")) set("Game.World", "world");
 		if(!config.contains("Game.TimeLimit")) set("Game.TimeLimit", 600);
+		if(!config.contains("Game.Lobby")){
+			set("Game.Lobby.world", "world");
+			set("Game.Lobby.x", 0);
+			set("Game.Lobby.y", 0);
+			set("Game.Lobby.z", 0);
+		}
 	}
 	
 	public File getFile(){
@@ -43,7 +49,8 @@ public class Config {
 	private void save(){
 		config.options().header("Game:"
 				+ "\n\tWorld: Which world will the game take place in?"
-				+ "\n\tTimeLimit: Time in seconds that the game will last for.");
+				+ "\n\tTimeLimit: Time in seconds that the game will last for."
+				+ "\n\tLobby: The location at which people will go when not in battle. Use \"/set lobby\" in game to set this easily");
 		try {
 			config.save(file);
 		} catch (IOException e) {

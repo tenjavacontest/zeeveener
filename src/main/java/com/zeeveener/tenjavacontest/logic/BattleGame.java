@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Scoreboard;
 
 import com.zeeveener.tenjavacontest.TenJava;
 import com.zeeveener.tenjavacontest.utilities.Chat;
@@ -18,15 +19,14 @@ import com.zeeveener.tenjavacontest.utilities.Chat;
 public class BattleGame {
 
 	public static HashMap<Player, BattleGame> games = new HashMap<Player, BattleGame>();
+	public static World world;
 	
 	private TenJava plugin;
 	private HashMap<EntityType, Integer> kills = new HashMap<EntityType, Integer>();
 	private int points = 0;
 	private Player p;
-	private int threadID;
-	private boolean running = false;
+	private int taskId;
 	private int deaths = 0;
-	private Scoreboard score;
 	
 	public BattleGame(TenJava instance, Player player){
 		plugin = instance;
@@ -38,7 +38,7 @@ public class BattleGame {
 	private void start(){
 		int seconds = plugin.config.getConfig().getInt("Game.TimeLimit", 600);
 		Chat.message(p, "You have " + (int)seconds/60 + " minutes. Get hunting!");
-		threadID = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+		taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
 			@Override
 			public void run() {
 				p.getInventory().clear();
@@ -51,15 +51,32 @@ public class BattleGame {
 				report.add("Most Killed Mob: " + Chat.m + getMostKilled().name() + Chat.g + " with " + Chat.m + kills.get(getMostKilled()) + Chat.g + " kills");
 			}
 		}, seconds*20L);
-		String world = plugin.config.getConfig().getString("Game.World");
-		p.teleport(plugin.getServer().getWorld(world).getSpawnLocation());
+		String w = plugin.config.getConfig().getString("Game.World");
+		world = plugin.getServer().getWorld(w);
+		p.teleport(world.getSpawnLocation());
 		giveBasicEquipment();
 		
 		/*
 		 * Scoreboard
 		 */
-		
-		running = true;
+	}
+	
+	public void stop(){
+		if(taskId >= 0) this.plugin.getServer().getScheduler().cancelTask(taskId);
+		Chat.message(p, "The game was stopped prematurely.");
+		p.teleport(getLobby());
+	}
+	
+	public Location getLobby(){
+		World w = plugin.getServer().getWorld(plugin.config.getConfig().getString("Game.Lobby.world", "world"));
+		int x = plugin.config.getConfig().getInt("Game.Lobby.x", 0);
+		int y = plugin.config.getConfig().getInt("Game.Lobby.y", 0);
+		int z = plugin.config.getConfig().getInt("Game.Lobby.z", 0);
+		return new Location(w,x,y,z);
+	}
+	
+	public static World getGameWorld(){
+		return world;
 	}
 	
 	public static void addPoints(Player p, int toAdd){
