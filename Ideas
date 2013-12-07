@@ -1,10 +1,27 @@
 Theme: Entities
 
 Mob Hunter
-    Spawn in with certain items.
+    Spawn in with certain items. - Done
     Scoreboard with points 
     Leaderboard?
-    Entities cost more/less per kill
+    Entities earn more/less per kill - Done
     As points progress, weapons/ammo/food/armor are rewarded
-    Time limit? 
-    Specific world/area?
+    Time limit? - Done
+    Specific world/area? - Done-ish
+    
+Commands:
+
+/setup  - Walks you through the setup process
+    1. Choose game world and spawn location
+    2. Choose lobby location
+    3. 
+/set    - Sets certain values individually
+    1. Game world and spawn
+    2. Lobby location
+/join   - Sends a player to the lobby.
+/leave
+/start  - Starts a game for that player
+/game   - Admin commands
+    1. Start games for every player in the lobby
+    2. Stop all currently running games.
+    3. Start/Stop game for any individual player
