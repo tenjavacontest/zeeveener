@@ -47,8 +47,6 @@ public class Lobby {
 		p.getInventory().clear();
 		p.teleport(spawn);
 		addToLobby(p);
-		Chat.message(p, "Welcome to the Battle Lobby!");
-		Chat.message(p, "To start a game, type /start");
 	}
 	public void leaveLobby(Player p){
 		p.getInventory().clear();
