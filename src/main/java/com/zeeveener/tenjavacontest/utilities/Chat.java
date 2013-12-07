@@ -17,9 +17,9 @@ public class Chat {
 		log = Logger.getLogger("Minecraft");
 	}
 	
-	private static ChatColor m = ChatColor.GOLD;
-	private static ChatColor g = ChatColor.GRAY;
-	private static ChatColor e = ChatColor.RED;
+	public static ChatColor m = ChatColor.GOLD;
+	public static ChatColor g = ChatColor.GRAY;
+	public static ChatColor e = ChatColor.RED;
 	
 	public static void toConsole(String message){
 		log.info("[ZeeTenJava] " + ChatColor.stripColor(message));

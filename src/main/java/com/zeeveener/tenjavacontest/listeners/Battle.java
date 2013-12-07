@@ -1,10 +1,12 @@
 package com.zeeveener.tenjavacontest.listeners;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import com.zeeveener.tenjavacontest.logic.BattleGame;
 import com.zeeveener.tenjavacontest.utilities.Chat;
 
 public class Battle implements Listener{
@@ -13,9 +15,12 @@ public class Battle implements Listener{
 	@EventHandler
 	public void onMobDeath(EntityDeathEvent e){
 		Entity dead = e.getEntity();
-		Entity killer = e.getEntity().getKiller();
+		Player killer = e.getEntity().getKiller();
 		if(killer == null) return;
 		int pointsAwarded = points(dead);
+		if(pointsAwarded <= 0) return;
+		
+		BattleGame.addKill(killer, dead.getType());
 	}
 	
 	private int points(Entity e){
