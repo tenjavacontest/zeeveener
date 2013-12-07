@@ -10,12 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.zeeveener.tenjavacontest.TenJava;
-import com.zeeveener.tenjavacontest.utilities.Chat;
 
 public class Lobby {
 
 	private TenJava plugin;
-	private static List<Player> inLobby = new ArrayList<Player>();
+	public static List<Player> inLobby = new ArrayList<Player>();
 	private static HashMap<Player, PlayerInventory> oldInvs = new HashMap<Player, PlayerInventory>();
 	private Location spawn;
 	

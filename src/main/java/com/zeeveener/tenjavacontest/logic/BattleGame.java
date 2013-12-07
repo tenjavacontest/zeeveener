@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -70,7 +71,7 @@ public class BattleGame {
 		giveBasicEquipment();
 	}
 	public void stop(){
-		if(taskId >= 0) this.plugin.getServer().getScheduler().cancelTask(taskId);
+		if(taskId >= 0) plugin.getServer().getScheduler().cancelTask(taskId);
 		plugin.lobby.joinLobby(p);
 		games.remove(p);
 	}
@@ -90,6 +91,13 @@ public class BattleGame {
 		p.setScoreboard(score);
 	}
 	
+	public static void setGameWorld(Location loc, TenJava plugin){
+		world = loc.getWorld();
+		plugin.config.getConfig().set("Game.World.world", loc.getWorld().getName());
+		plugin.config.getConfig().set("Game.World.x", loc.getX());
+		plugin.config.getConfig().set("Game.World.y", loc.getY());
+		plugin.config.getConfig().set("Game.World.z", loc.getZ());
+	}
 	public static World getGameWorld(){
 		return world;
 	}
