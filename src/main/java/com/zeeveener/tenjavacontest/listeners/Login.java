@@ -21,11 +21,13 @@ public class Login implements Listener{
 	 */
 	@EventHandler
 	public void onLogin(PlayerJoinEvent e){
-		BattleGame.games.put(e.getPlayer(), new BattleGame(plugin, e.getPlayer()));
+		if(!plugin.config.getConfig().getBoolean("Game.TakeOverServer", false)) return;
+		plugin.lobby.joinLobby(e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onLogout(PlayerQuitEvent e){
+		plugin.lobby.leaveLobby(e.getPlayer());
 		BattleGame.games.remove(e.getPlayer());
 		Chat.toConsole(e.getPlayer().getName() + " has left their game.");
 	}
