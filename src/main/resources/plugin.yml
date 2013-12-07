@@ -1,0 +1,5 @@
+name: TenJava
+author: zeeveener
+version: 1.0
+main: com.zeeveener.tenjavacontest.TenJava
+description: Plugin built around the TenJava competition.
