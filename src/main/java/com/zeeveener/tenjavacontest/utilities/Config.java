@@ -16,7 +16,7 @@ public class Config {
 	
 	public Config(TenJava instance){
 		plugin = instance;
-		file = new File(plugin.getDataFolder() + "config.yml");
+		file = new File(plugin.getDataFolder() + File.separator + "config.yml");
 		if(!file.exists()){
 			try {
 				file.createNewFile();
@@ -37,7 +37,7 @@ public class Config {
 	public File getFile(){
 		return file;
 	}
-	public FileConfiguration config(){
+	public FileConfiguration getConfig(){
 		return config;
 	}
 	private void save(){
