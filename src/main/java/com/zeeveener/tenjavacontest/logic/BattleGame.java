@@ -12,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Scoreboard;
 
 import com.zeeveener.tenjavacontest.TenJava;
 import com.zeeveener.tenjavacontest.utilities.Chat;
@@ -35,7 +34,7 @@ public class BattleGame {
 	
 	private int gameTimeSeconds = 0;
 	
-	public static void createGame(Player p, TenJava instance){
+	public synchronized static void createGame(Player p, TenJava instance){
 		games.put(p, new BattleGame(instance, p));
 	}	
 	
@@ -53,61 +52,49 @@ public class BattleGame {
 			@Override
 			public void run() {
 				int seconds = plugin.config.getConfig().getInt("Game.TimeLimit", 600);
-				if(++gameTimeSeconds >= seconds){
+				gameTimeSeconds++;
+				if(gameTimeSeconds >= seconds){
 					List<String> report = new ArrayList<String>();
 					report.add("Points Earned: " + points);
 					report.add("Total Kills: " + killCount);
-					report.add("Most Killed Mob: " + getMostKilled().name());
+					if(getMostKilled() != null) report.add("Most Killed Mob: " + getMostKilled().name());
 					Chat.message(p, "Game Over!", report.toArray(new String[0]));
 					
 					stop();
+				}else if(seconds - gameTimeSeconds <= 30){
+					Chat.message(p, (seconds - gameTimeSeconds) + " seconds left!");
 				}
-				p.getScoreboard().getObjective("tRem").getScore(p).setScore(seconds - gameTimeSeconds);
 			}
 		}, 20l, 20l);
-		String w = plugin.config.getConfig().getString("Game.World");
+		String w = plugin.config.getConfig().getString("Game.World.world");
 		world = plugin.getServer().getWorld(w);
 		p.teleport(world.getSpawnLocation());
 		giveBasicEquipment();
 	}
-	public void stop(){
+	public synchronized void stop(){
 		if(taskId >= 0) plugin.getServer().getScheduler().cancelTask(taskId);
 		plugin.lobby.joinLobby(p);
 		games.remove(p);
 	}
 	
-	public void initScoreboard(){
-		Scoreboard score = plugin.getServer().getScoreboardManager().getNewScoreboard();
-		score.registerNewObjective("Kills", "Kills");
-		score.getObjective("Kills").setDisplayName("Kills");
-		score.getObjective("Kills").getScore(p).setScore(killCount);
-		score.registerNewObjective("points", "points");
-		score.getObjective("points").setDisplayName("Points Earned");
-		score.getObjective("points").getScore(p).setScore(points);
-		score.registerNewObjective("tRem", "tRem");
-		score.getObjective("tRem").setDisplayName("Time Remaining (Seconds)");
-		int seconds = plugin.config.getConfig().getInt("Game.TimeLimit", 600);
-		score.getObjective("tRem").getScore(p).setScore(seconds - gameTimeSeconds);
-		p.setScoreboard(score);
-	}
-	
-	public static void setGameWorld(Location loc, TenJava plugin){
+	public synchronized static void setGameWorld(Location loc, TenJava plugin){
 		world = loc.getWorld();
-		plugin.config.getConfig().set("Game.World.world", loc.getWorld().getName());
-		plugin.config.getConfig().set("Game.World.x", loc.getX());
-		plugin.config.getConfig().set("Game.World.y", loc.getY());
-		plugin.config.getConfig().set("Game.World.z", loc.getZ());
+		plugin.config.set("Game.World.world", loc.getWorld().getName());
+		plugin.config.set("Game.World.x", loc.getX());
+		plugin.config.set("Game.World.y", loc.getY());
+		plugin.config.set("Game.World.z", loc.getZ());
 	}
-	public static World getGameWorld(){
+	public synchronized static World getGameWorld(){
 		return world;
 	}
 	
-	public static void addPoints(Player p, int toAdd){
+	public synchronized static void addPoints(Player p, int toAdd){
 		if(!games.containsKey(p)) return;
 		games.get(p).addPoints(toAdd);
 	}
 	public void addPoints(int toAdd){
 		points += toAdd;
+		Chat.message(p, toAdd + " Points!");
 		if(points%10 == 0){
 			if(points - lastLotteryPoints >= 20){
 				if(p.getHealth() < p.getMaxHealth()*0.35) giveFood();
@@ -115,7 +102,7 @@ public class BattleGame {
 		}
 	}
 	
-	public static void addDeath(Player p){
+	public synchronized static void addDeath(Player p){
 		if(!games.containsKey(p)) return;
 		games.get(p).addDeath();
 	}
@@ -126,7 +113,7 @@ public class BattleGame {
 		}
 	}
 	
-	public static void addKill(Player p, EntityType e){
+	public synchronized static void addKill(Player p, EntityType e){
 		if(!games.containsKey(p)) return;
 		games.get(p).addKill(e);
 	}

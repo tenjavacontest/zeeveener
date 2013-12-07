@@ -35,31 +35,34 @@ public class Lobby {
 	}
 	public void setSpawn(Location loc){
 		spawn = loc;
-		plugin.config.getConfig().set("Game.Lobby.world", loc.getWorld().getName());
-		plugin.config.getConfig().set("Game.Lobby.x", loc.getX());
-		plugin.config.getConfig().set("Game.Lobby.y", loc.getY());
-		plugin.config.getConfig().set("Game.Lobby.z", loc.getZ());
+		plugin.config.set("Game.Lobby.world", loc.getWorld().getName());
+		plugin.config.set("Game.Lobby.x", loc.getX());
+		plugin.config.set("Game.Lobby.y", loc.getY());
+		plugin.config.set("Game.Lobby.z", loc.getZ());
 	}
 	
-	public void joinLobby(Player p){
+	public synchronized void joinLobby(Player p){
 		oldInvs.put(p, p.getInventory());
 		p.getInventory().clear();
 		p.teleport(spawn);
 		addToLobby(p);
 	}
-	public void leaveLobby(Player p){
+	public synchronized void leaveLobby(Player p){
 		p.getInventory().clear();
 		p.getInventory().setContents(oldInvs.get(p).getContents());
+		oldInvs.remove(p);
 		removeFromLobby(p);
 	}
 	
-	public boolean isPlayerInLobby(Player p){
+	public synchronized boolean isPlayerInLobby(Player p){
 		return inLobby.contains(p);
 	}
-	public void addToLobby(Player p){
+	public synchronized void addToLobby(Player p){
 		inLobby.add(p);
 	}
-	public void removeFromLobby(Player p){
-		inLobby.remove(p);
+	public synchronized void removeFromLobby(Player p){
+		for(int i = 0; i < inLobby.size(); i++){
+			if(inLobby.get(i).getName().equals(p.getName())) inLobby.remove(i);
+		}
 	}
 }
