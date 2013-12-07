@@ -3,3 +3,34 @@ author: zeeveener
 version: 1.0
 main: com.zeeveener.tenjavacontest.TenJava
 description: Plugin built around the TenJava competition.
+permissions:
+    zeeten.game.join:
+        description: Join the lobby
+    zeeten.game.leave:
+        description: Leave the lobby
+    zeeten.game.start:
+        description: Start your own game.
+    zeeten.admin.setup:
+        description: Use the /setup command
+    zeeten.admin.game:
+        description: Control other players' games
+    zeeten.all:
+        description: All permissions
+        children:
+            zeeten.game.join: true
+            zeeten.game.leave: true
+            zeeten.game.start: true
+            zeeten.admin.setup: true
+            zeeten.admin.set: true
+            zeeten.admin.game: true
+commands:
+    join:
+        description: Join the lobby
+    leave:
+        description: Leave the lobby
+    start:
+        description: Start the game
+    setup:
+        description: Setup the global game settings
+    game:
+        description: Control other players' games
