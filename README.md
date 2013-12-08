@@ -9,18 +9,18 @@ Idea:
 
 
 Commands:
-    /join: Join the lobby
-    /leave: Leave the lobby
-    /start: Start the game
-    /game (args): Handle game for other players
-    /setup (args): Setup the game before playing.
+- /join: Join the lobby
+- /leave: Leave the lobby
+- /start: Start the game
+- /game (args): Handle game for other players
+- /setup (args): Setup the game before playing.
     
 Permissions:
-    zeeten.game.start
-    zeeten.game.join
-    zeeten.game.leave
-    zeeten.admin.game
-    zeeten.admin.setup
+- zeeten.game.start
+- zeeten.game.join
+- zeeten.game.leave
+- zeeten.admin.game
+- zeeten.admin.setup
 
 
 zeeveener
