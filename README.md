@@ -1,6 +1,8 @@
 Plugin info
 =========
 
+Compiled Using CB 1.6.4R2.0
+
 Idea: 
 - The plugin is a mob hunter game. 
 - Players spawn into a lobby and, when ready, start the hunt. 
